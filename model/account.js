@@ -46,14 +46,14 @@ const accountSchema = mongoose.Schema({
 });
 
 mongoose.model("accounts", accountSchema, "accounts");
-const account = mongoose.model("accounts");
-
+mongoose.set("useFindAndModify", false);
 const accountModel = mongoose.model("accounts", accountSchema, "accounts");
 
 module.exports = accountModel;
 
 //Functions to add json file data to mongodb cluster
 
+// const account = mongoose.model("accounts");
 // const fs = require("fs").promises;
 
 // const addAccount = (agencia, conta, name, balance) => {
