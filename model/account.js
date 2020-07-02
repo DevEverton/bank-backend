@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-// const fs = require("fs").promises;
 
 (async () => {
   try {
@@ -40,27 +39,36 @@ const accountSchema = mongoose.Schema({
   balance: {
     type: Number,
     require: true,
+    validate(balance) {
+      if (balance < 0) throw new Error("Não aceita valores negativos");
+    },
   },
 });
 
 mongoose.model("accounts", accountSchema, "accounts");
 const account = mongoose.model("accounts");
 
-const addAccount = (agencia, conta, name, balance) => {
-  new account({
-    agencia,
-    conta,
-    name,
-    balance,
-  })
-    .save()
-    .then(() => {
-      console.log("Documento inserido");
-    })
-    .catch((err) => console.log("Error catched: " + err));
-};
+const accountModel = mongoose.model("accounts", accountSchema, "accounts");
 
-//Function to add json file data to mongodb cluster
+module.exports = accountModel;
+
+//Functions to add json file data to mongodb cluster
+
+// const fs = require("fs").promises;
+
+// const addAccount = (agencia, conta, name, balance) => {
+//   new account({
+//     agencia,
+//     conta,
+//     name,
+//     balance,
+//   })
+//     .save()
+//     .then(() => {
+//       console.log("Documento inserido");
+//     })
+//     .catch((err) => console.log("Error catched: " + err));
+// };
 
 // async function getAccounts() {
 //   try {
