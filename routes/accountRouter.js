@@ -188,6 +188,25 @@ router.get("/smallbalances/:size", async (req, res) => {
   }
 });
 
+//List of accounts with higher balances sorted endpoint
+router.get("/highbalances/:size", async (req, res) => {
+  try {
+    const size = parseInt(req.params.size);
+    const accounts = await accountModel.aggregate([
+      { $sort: { balance: -1 } },
+      { $limit: size },
+    ]);
+
+    res.send(
+      accounts.map(({ agencia, conta, balance }) => {
+        return { agencia, conta, balance };
+      })
+    );
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
 const findAccount = async (model, agencia, conta) => {
   try {
     const account = await model.findOne({ agencia, conta });
