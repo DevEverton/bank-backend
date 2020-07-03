@@ -98,6 +98,63 @@ router.delete("/delete/:agencia/:conta", async (req, res) => {
   }
 });
 
+//Tranfer endpoint
+router.patch("/transfer/from/:conta1/to/:conta2", async (req, res) => {
+  try {
+    const fee = 8;
+    const amount = req.body.amount;
+    const { conta1, conta2 } = req.params;
+    const account1 = await accountModel.findOne({ conta: conta1 });
+    const account2 = await accountModel.findOne({ conta: conta2 });
+    if (!account1 || !account2) {
+      throw "Account not found";
+    }
+
+    if (account1.agencia !== account2.agencia) {
+      if (amount > account1.balance) {
+        throw "No sufficient balance to transfer. Insert another amount and try again.";
+      }
+      const updatedAccount1 = await accountModel.findOneAndUpdate(
+        {
+          conta: conta1,
+        },
+        { balance: account1.balance - amount - fee },
+        { new: true }
+      );
+      const updatedAccount2 = await accountModel.findOneAndUpdate(
+        {
+          conta: conta2,
+        },
+        { balance: account2.balance + amount },
+        { new: true }
+      );
+      res.send({ account1: updatedAccount1, account2: updatedAccount2 });
+    } else {
+      if (amount > account1.balance) {
+        throw "No sufficient balance to transfer. Insert another amount and try again.";
+      }
+
+      const updatedAccount1 = await accountModel.findOneAndUpdate(
+        {
+          conta: conta1,
+        },
+        { balance: account1.balance - amount },
+        { new: true }
+      );
+      const updatedAccount2 = await accountModel.findOneAndUpdate(
+        {
+          conta: conta2,
+        },
+        { balance: account2.balance + amount },
+        { new: true }
+      );
+      res.send({ account1: updatedAccount1, account2: updatedAccount2 });
+    }
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
 const findAccount = async (model, agencia, conta) => {
   try {
     const account = await model.findOne({ agencia, conta });
