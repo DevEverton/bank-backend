@@ -69,6 +69,7 @@ module.exports = accountModel;
 //     })
 //     .catch((err) => console.log("Error catched: " + err));
 // };
+// addAccount(10, 1234, "Everton Carneiro", 9999);
 
 // async function getAccounts() {
 //   try {

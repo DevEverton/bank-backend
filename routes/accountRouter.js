@@ -2,6 +2,7 @@ const express = require("express");
 const accountModel = require("../model/account.js");
 const router = express.Router();
 
+//Get all accounts
 router.get("/", async (req, res) => {
   try {
     const accounts = await accountModel.find({});
@@ -63,6 +64,35 @@ router.patch("/saque/:agencia/:conta", async (req, res) => {
       { new: true }
     );
     res.send(updatedAccount);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
+//Get account balance endpoint
+router.get("/saldo/:agencia/:conta", async (req, res) => {
+  try {
+    const { agencia, conta } = req.params;
+    const account = await findAccount(accountModel, agencia, conta);
+    if (!account) {
+      throw "Account not found";
+    }
+    res.send({ name: account.name, balance: account.balance });
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
+//Delete account endpoint
+router.delete("/delete/:agencia/:conta", async (req, res) => {
+  try {
+    const { agencia, conta } = req.params;
+    const account = await accountModel.findOneAndDelete({ agencia, conta });
+    const accounts = await accountModel.find({});
+    if (!account) {
+      throw "Account not found";
+    }
+    res.send({ activeAccounts: accounts.length });
   } catch (err) {
     res.status(500).send(err);
   }
