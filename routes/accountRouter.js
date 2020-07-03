@@ -155,6 +155,39 @@ router.patch("/transfer/from/:conta1/to/:conta2", async (req, res) => {
   }
 });
 
+//Average on an agency endpoint
+router.get("/media/:agencia", async (req, res) => {
+  try {
+    const agencia = req.params.agencia;
+    const accounts = await await accountModel.aggregate([
+      { $match: { agencia: parseInt(agencia) } },
+      { $group: { _id: { agencia: "$agencia" }, media: { $avg: "$balance" } } },
+    ]);
+    res.send(accounts);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
+//List of accounts with smaller balances sorted endpoint
+router.get("/smallbalances/:size", async (req, res) => {
+  try {
+    const size = parseInt(req.params.size);
+    const accounts = await accountModel.aggregate([
+      { $sort: { balance: 1 } },
+      { $limit: size },
+    ]);
+
+    res.send(
+      accounts.map(({ agencia, conta, balance }) => {
+        return { agencia, conta, balance };
+      })
+    );
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
 const findAccount = async (model, agencia, conta) => {
   try {
     const account = await model.findOne({ agencia, conta });
