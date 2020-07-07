@@ -4,7 +4,8 @@ const app = express();
 const accountRouter = require("./routes/accountRouter.js");
 
 app.use(express.json());
-app.use("/accounts", accountRouter);
+// app.use("/accounts", accountRouter);
+app.use(accountRouter);
 
 app.listen(process.env.PORT || 5000);
 
