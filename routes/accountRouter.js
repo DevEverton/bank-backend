@@ -210,31 +210,6 @@ router.get("/highbalances/:size", async (req, res) => {
 //Private agency endpoint
 router.patch("/private", async (req, res) => {
   try {
-    const maxAccounts = await accountModel.aggregate([
-      {
-        $group: {
-          _id: "$agencia",
-          max: { $max: "$balance" },
-        },
-      },
-      {
-        $project: { agencia: "$_id", balance: "$max", _id: 0 },
-      },
-    ]);
-
-    maxAccounts.forEach(async (account) => {
-      await accountModel.findOneAndUpdate(
-        {
-          agencia: account.agencia,
-          balance: account.balance,
-        },
-        { agencia: 99 },
-        { new: true }
-      );
-    });
-    const privateAccounts = await accountModel.find({ agencia: 99 });
-
-    res.send(privateAccounts);
   } catch (err) {
     res.status(500).send(err);
   }
