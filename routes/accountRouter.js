@@ -3,7 +3,7 @@ const accountModel = require("../model/account.js");
 const router = express.Router();
 
 //Get all accounts
-router.get("/", async (req, res) => {
+router.get("/accounts", async (req, res) => {
   try {
     const accounts = await accountModel.find({});
     res.send(accounts);
